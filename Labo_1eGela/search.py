@@ -91,11 +91,25 @@ def depthFirstSearch(problem):
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
 
+
+    """
+    stack = util.Stack()
+    visited = set()
+    path = util.Queue()
+    start_state = problem.getStartState()
+    stack.push((start_state, []))
+    while not stack.isEmpty():
+        state, path = stack.pop()
+        if problem.isGoalState(state):
+            return path
+        if state not in visited:
+            visited.add(state)
+            for successor, action, stepCost in problem.getSuccessors(state):
+                new_path = path + [action]
+                stack.push((successor, new_path))
     print("Start:", problem.getStartState())
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    """
-    Stack stack = util.Stack()
     
 
 def breadthFirstSearch(problem):
