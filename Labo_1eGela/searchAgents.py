@@ -301,22 +301,26 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self._visited = {}
+        self._visitedlist = []
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        pacman_position = self.startingPosition
+        visited_corners = (False, False, False, False)  # Initially, no corners have been visited
+        return (pacman_position, visited_corners)
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        corners = self.corners  # These are the corner coordinates
+        visited_corners = state[1]
+        return all(visited_corners)  # Check if all corners have been visited
+    
     def getSuccessors(self, state):
         """
         Returns successor states, the actions they require, and a cost of 1.
@@ -373,7 +377,14 @@ def cornersHeuristic(state, problem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0  # Default to trivial solution
+    state_position = state[0]
+    visited_corners = state[1]
+    unvisited_corners = [corner for i, corner in enumerate(corners) if not visited_corners[i]]
+    if unvisited_corners:
+        distances = [util.manhattanDistance(state_position, corner) for corner in unvisited_corners]
+        return min(distances)
+    else:  
+        return 0  # Default to trivial solution
 
 
 class AStarCornersAgent(SearchAgent):
