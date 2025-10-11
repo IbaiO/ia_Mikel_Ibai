@@ -394,11 +394,10 @@ def cornersHeuristic(state, problem):
     state_position = state[0]
     visited_corners = state[1]
     unvisited_corners = [corner for i, corner in enumerate(corners) if not visited_corners[i]]
-    if unvisited_corners:
-        distances = [util.manhattanDistance(state_position, corner) for corner in unvisited_corners]
-        return min(distances)
-    else:  
-        return 0  # Default to trivial solution
+    if not unvisited_corners:
+        return 0
+    distances = [util.manhattanDistance(state_position, corner) for corner in unvisited_corners]
+    return max(distances)
 
 
 class AStarCornersAgent(SearchAgent):
@@ -504,9 +503,13 @@ def foodHeuristic(state, problem):
         return 0
     max_distance = 0
     for food in foodGrid.asList():
-        if (position, food) not in problem.heuristicInfo:
-            problem.heuristicInfo[(position, food)] = util.manhattanDistance(position, food)
-        max_distance = max(max_distance, problem.heuristicInfo[(position, food)])
+        key = (position, food)
+        if key not in problem.heuristicInfo:
+            problem.heuristicInfo[key] = mazeDistance(position, food, problem.startingGameState)
+        dist = problem.heuristicInfo[key]
+        if dist > max_distance:
+            max_distance = dist
+
     return max_distance
 
 
