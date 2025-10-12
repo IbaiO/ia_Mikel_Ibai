@@ -298,9 +298,6 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print('Warning: no food in corner ' + str(corner))
         self._expanded = 0  # DO NOT CHANGE; Number of search nodes expanded
-        # Please add any code here which you would like to use
-        # in initializing the problem
-        #*** YOUR CODE HERE ***
         self.startingGameState = startingGameState
         self._visited = {}
         self._visitedlist = []
@@ -311,16 +308,16 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         pacman_position = self.startingPosition
-        visited_corners = (False, False, False, False)  # Initially, no corners have been visited
+        visited_corners = (False, False, False, False)
         return (pacman_position, visited_corners)
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        corners = self.corners  # These are the corner coordinates
+        corners = self.corners
         visited_corners = state[1]
-        return all(visited_corners)  # Check if all corners have been visited
+        return all(visited_corners)
     
     def getSuccessors(self, state):
         """
@@ -342,7 +339,6 @@ class CornersProblem(search.SearchProblem):
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
 
-            #*** YOUR CODE HERE ***
             currentPosition, visitedTuple = state
             x, y = currentPosition
             dx, dy = Actions.directionToVector(action)
@@ -390,7 +386,6 @@ def cornersHeuristic(state, problem):
     corners = problem.corners  # These are the corner coordinates
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
     state_position = state[0]
     visited_corners = state[1]
     unvisited_corners = [corner for i, corner in enumerate(corners) if not visited_corners[i]]
@@ -538,7 +533,6 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        #*** YOUR CODE HERE ***
         return search.bfs(problem)
 
 
@@ -576,7 +570,6 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x, y = state
 
-        "*** YOUR CODE HERE ***"
         return self.food[x][y]
 
 
@@ -597,4 +590,3 @@ def mazeDistance(point1, point2, gameState):
     assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
     prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
     return len(search.bfs(prob))
-
