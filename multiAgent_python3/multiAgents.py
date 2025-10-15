@@ -79,10 +79,11 @@ class ReflexAgent(Agent):
         closestFood = min([manhattanDistance(newPos, food) for food in foodList]) if foodList else 0
         ghostDistances = [manhattanDistance(newPos, ghost.getPosition()) for ghost in newGhostStates]
         closestGhost = min(ghostDistances) if ghostDistances else float('inf')
-
-        if closestGhost <= 1:
+        if (closestGhost > 10):
+            closestGhost = 10
+        elif closestGhost <= 1:
             return -float('inf')  # Avoid states where Pacman is too close to a ghost
-        
+
         return successorGameState.getScore() + (1 / (closestFood + 1)) * 10 - (closestGhost) * 2
         #return successorGameState.getScore() +  (1 / (closestFood + 1)) * 10 - (closestGhost) * 2 #Tendr�is que comentar esta linea y devolver el valor que calculeis
 
