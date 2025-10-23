@@ -196,8 +196,60 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Alpha-beta search over plies. We avoid pruning on equality to
+        # match the autograder's explored-node set (use strict < and >).
+        num_agents = game_state.getNumAgents()
+        max_depth = self.depth * num_agents
+
+        def ab_search(agent_index, depth, state, alpha, beta):
+            # terminal o profundidad alcanzada
+            if depth == max_depth or state.isWin() or state.isLose():
+                return self.evaluationFunction(state)
+
+            legal_actions = state.getLegalActions(agent_index)
+            if not legal_actions:
+                return self.evaluationFunction(state)
+
+            if agent_index == 0:  # minimizador (Pacman)
+                value = -float('inf')
+                for action in legal_actions:
+                    succ = state.generateSuccessor(agent_index, action)
+                    value = max(value, ab_search(1, depth + 1, succ, alpha, beta))
+                    # actualiza alpha no usando igualdad
+                    if value > alpha:
+                        alpha = value
+                    if alpha > beta:
+                        return value
+                return value
+            else:  # minimizador (fantasmas)
+                next_agent = (agent_index + 1) % num_agents
+                value = float('inf')
+                for action in legal_actions:
+                    succ = state.generateSuccessor(agent_index, action)
+                    value = min(value, ab_search(next_agent, depth + 1, succ, alpha, beta))
+                    # actualiza beta no usando igualdad
+                    if value < beta:
+                        beta = value
+                    if alpha > beta:
+                        return value
+                return value
+
+        # comparador y seleccionador de la mejor accion
+        best_action = None
+        best_score = -float('inf')
+        alpha = -float('inf')
+        beta = float('inf')
+        for action in game_state.getLegalActions(0):
+            succ = game_state.generateSuccessor(0, action)
+            score = ab_search(1, 1, succ, alpha, beta)
+            if score > best_score or best_action is None:
+                best_score = score
+                best_action = action
+            # actualiza alpha no usando igualdad
+            if score > alpha:
+                alpha = score
+
+        return best_action
 
 
 
