@@ -311,7 +311,11 @@ def betterEvaluationFunction(currentGameState):
 
     DESCRIPTION: Esta función de evaluación tiene en cuenta la posición de Pacman, la comida, los fantasmas
     y las cápsulas para calcular una puntuacion que determine el estado del juego.
-    
+    1- Calcula la distancia a la comida más cercana
+    2- Calcula la distancia al fantasma más cercano y si está asustado o no
+    3- Aumenta la puntuación en base a la cantidad de comida restante y la distancia
+    4- Disminuye la puntuación si un fantasma está demasiado cerca y no está asustado
+
     """
     pacman_pos = currentGameState.getPacmanPosition()
     newFood = currentGameState.getFood()
