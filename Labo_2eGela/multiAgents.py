@@ -315,6 +315,7 @@ def betterEvaluationFunction(currentGameState):
     2- Calcula la distancia al fantasma más cercano y si está asustado o no
     3- Aumenta la puntuación en base a la cantidad de comida restante y la distancia
     4- Disminuye la puntuación si un fantasma está demasiado cerca y no está asustado
+    5- Las cápsulas también aumentan la puntuación en función de su distancia
 
     """
     pacman_pos = currentGameState.getPacmanPosition()
