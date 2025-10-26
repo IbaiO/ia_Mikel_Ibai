@@ -317,8 +317,26 @@ def betterEvaluationFunction(currentGameState):
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    food_list = newFood.asList()
 
+    # comida más cercana
+    if food_list:
+        closest_food = min([util.manhattanDistance(pacman_pos, food) for food in food_list])
+    else:
+        closest_food = 0
+
+    # distancia al fantasma más cercano
+    if newGhostStates:
+        closest_ghost = min([util.manhattanDistance(pacman_pos, ghost.getPosition()) for ghost in newGhostStates])
+    else:
+        closest_ghost = 0
+
+    # calcula la puntuación basada en la distancia a la comida y a los fantasmas
+    score = currentGameState.getScore()
+    score += 1.0 / (closest_food + 1)  
+    score -= 1.0 / (closest_ghost + 1) 
+
+    return score
 
 # Abbreviation
 better = betterEvaluationFunction
