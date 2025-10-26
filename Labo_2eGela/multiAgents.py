@@ -309,7 +309,9 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: Esta función de evaluación tiene en cuenta la posición de Pacman, la comida, los fantasmas
+    y las cápsulas para calcular una puntuacion que determine el estado del juego.
+    
     """
     pacman_pos = currentGameState.getPacmanPosition()
     newFood = currentGameState.getFood()
