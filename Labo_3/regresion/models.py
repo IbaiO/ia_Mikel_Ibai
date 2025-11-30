@@ -1,7 +1,5 @@
 import nn
 
-
-
 class RegressionModel(object):
     """
     A neural network model for approximating a function that maps from real
@@ -19,12 +17,21 @@ class RegressionModel(object):
         # self.w1 = nn.Parameter(5, 1)
         # self.b1 = nn.Parameter(1, 1)
         # self.lr = -0.01
-        #
         "*** YOUR CODE HERE ***"
-
-
-
-
+        self.batch_size = 20
+        self.learning_rate = -0.01
+        
+        # 1. layer
+        self.w0 = nn.Parameter(1, 64)
+        self.b0 = nn.Parameter(1, 64)
+        
+        # 2. layer
+        self.w1 = nn.Parameter(64, 32)
+        self.b1 = nn.Parameter(1, 32)
+        
+        # Output layer
+        self.w2 = nn.Parameter(32, 1)
+        self.b2 = nn.Parameter(1, 1)
 
     def run(self, x):
         """
@@ -37,11 +44,21 @@ class RegressionModel(object):
             Como es un modelo de regresion, cada valor y tambien tendra un unico valor
         """
         "*** YOUR CODE HERE ***"
-
-
-
-
-
+        # 1. layer
+        h0 = nn.Linear(x, self.w0)
+        h0 = nn.AddBias(h0, self.b0)
+        h0 = nn.ReLU(h0)
+        
+        # 2. layer
+        h1 = nn.Linear(h0, self.w1)
+        h1 = nn.AddBias(h1, self.b1)
+        h1 = nn.ReLU(h1)
+        
+        # Output layer
+        output = nn.Linear(h1, self.w2)
+        output = nn.AddBias(output, self.b2)
+        
+        return output
 
 
     def get_loss(self, x, y):
@@ -57,10 +74,7 @@ class RegressionModel(object):
                 return nn.SquareLoss(self.run(x),ANNADE LA VARIABLE QUE ES NECESARIA AQUI), para medir el error, necesitas comparar el resultado de tu prediccion con .... que?
         """
         "*** YOUR CODE HERE ***"
-
-
-
-
+        return nn.SquareLoss(self.run(x), y)
 
 
     def train(self, dataset):
@@ -77,10 +91,25 @@ class RegressionModel(object):
             #UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
 
             "*** YOUR CODE HERE ***"
-
-
-
-
+            total_loss = 0
+            count = 0
+            
+            for x, y in dataset.iterate_once(batch_size):
+                loss = self.get_loss(x, y)
+                
+                grads = nn.gradients(loss, [self.w0, self.b0, self.w1, self.b1, self.w2, self.b2])
+                
+                self.w0.update(grads[0], self.learning_rate)
+                self.b0.update(grads[1], self.learning_rate)
+                self.w1.update(grads[2], self.learning_rate)
+                self.b1.update(grads[3], self.learning_rate)
+                self.w2.update(grads[4], self.learning_rate)
+                self.b2.update(grads[5], self.learning_rate)
+                
+                total_loss += nn.as_scalar(loss)
+                count += 1
+            
+            total_loss = total_loss / count
 
             
 class DigitClassificationModel(object):
@@ -107,6 +136,19 @@ class DigitClassificationModel(object):
         pixel_vector_length = pixel_dim_size* pixel_dim_size
  
         "*** YOUR CODE HERE ***"
+        hidden_size = 128
+        
+        # 1. layer
+        self.w0 = nn.Parameter(pixel_vector_length, hidden_size)
+        self.b0 = nn.Parameter(1, hidden_size)
+        
+        # Output layer
+        self.w1 = nn.Parameter(hidden_size, output_size)
+        self.b1 = nn.Parameter(1, output_size)
+        
+        self.batch_size = 32
+        self.learning_rate = -0.5
+
 
      
 
@@ -126,9 +168,16 @@ class DigitClassificationModel(object):
             output_size = 10 # TAMANO EQUIVALENTE AL NUMERO DE CLASES DADO QUE QUIERES OBTENER 10 "COSENOS"
         """
         "*** YOUR CODE HERE ***"
-
-
-
+        # 1. layer
+        h0 = nn.Linear(x, self.w0)
+        h0 = nn.AddBias(h0, self.b0)
+        h0 = nn.ReLU(h0)
+        
+        # Output layer
+        logits = nn.Linear(h0, self.w1)
+        logits = nn.AddBias(logits, self.b1)
+        
+        return logits
 
 
     def get_loss(self, x, y):
@@ -163,11 +212,23 @@ class DigitClassificationModel(object):
         EL NUM DE EJEMPLOS DEL TRAIN QUE SE HAN CLASIFICADO CORRECTAMENTE 
         """
         batch_size = self.batch_size
-        while dataset.get_validation_accuracy() < 0.97:
+        while dataset.get_validation_accuracy() < 0.975:
             #ITERAR SOBRE EL TRAIN EN LOTES MARCADOS POR EL BATCH SIZE COMO HABEIS HECHO EN LOS OTROS EJERCICIOS
             #ACTUALIZAR LOS PESOS EN BASE AL ERROR loss = self.get_loss(x, y) QUE RECORDAD QUE GENERA
             #UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
             "*** YOUR CODE HERE ***"
+            for x, y in dataset.iterate_forever(batch_size):
+                loss = self.get_loss(x, y)
+                
+                grads = nn.gradients(loss, [self.w0, self.b0, self.w1, self.b1])
+                
+                self.w0.update(grads[0], self.learning_rate)
+                self.b0.update(grads[1], self.learning_rate)
+                self.w1.update(grads[2], self.learning_rate)
+                self.b1.update(grads[3], self.learning_rate)
+                
+                if dataset.get_validation_accuracy() > 0.975:
+                    break
 
 
 
