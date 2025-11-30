@@ -136,6 +136,8 @@ class DigitClassificationModel(object):
         pixel_vector_length = pixel_dim_size* pixel_dim_size
  
         "*** YOUR CODE HERE ***"
+        import random
+        random.seed(42)
         hidden_size = 128
         
         # 1. layer
@@ -229,7 +231,3 @@ class DigitClassificationModel(object):
                 
                 if dataset.get_validation_accuracy() > 0.975:
                     break
-
-
-
-
