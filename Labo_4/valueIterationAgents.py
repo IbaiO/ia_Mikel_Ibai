@@ -163,6 +163,21 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
 
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
+        states = self.mdp.getStates()
+        stateIndex = 0
+        
+        for iteration in range(self.iterations):
+            state = states[stateIndex]
+            stateIndex = (stateIndex + 1) % len(states)
+            
+            if not self.mdp.isTerminal(state):
+                actions = self.mdp.getPossibleActions(state)
+                if len(actions) > 0:
+                    max_qvalue = max(
+                        self.computeQValueFromValues(state, action) 
+                        for action in actions
+                    )
+                    self.values[state] = max_qvalue
 
 class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
     """
@@ -183,4 +198,59 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
 
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
+        import heapq
+        
+        states = self.mdp.getStates()
+        
+        predecessors = {}
+        for state in states:
+            predecessors[state] = set()
+        
+        for state in states:
+            if not self.mdp.isTerminal(state):
+                actions = self.mdp.getPossibleActions(state)
+                for action in actions:
+                    for nextState, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+                        predecessors[nextState].add(state)
+        
+        priority_queue = []
+        
+        for state in states:
+            if not self.mdp.isTerminal(state):
+                actions = self.mdp.getPossibleActions(state)
+                if len(actions) > 0:
+                    max_qvalue = max(
+                        self.computeQValueFromValues(state, action) 
+                        for action in actions
+                    )
+                    diff = abs(self.values[state] - max_qvalue)
+                    if diff > self.theta:
+                        heapq.heappush(priority_queue, (-diff, state))
+        
+        for iteration in range(self.iterations):
+            if len(priority_queue) == 0:
+                break
+            
+            _, state = heapq.heappop(priority_queue)
+            
+            if not self.mdp.isTerminal(state):
+                actions = self.mdp.getPossibleActions(state)
+                if len(actions) > 0:
+                    max_qvalue = max(
+                        self.computeQValueFromValues(state, action) 
+                        for action in actions
+                    )
+                    self.values[state] = max_qvalue
+            
+            for predecessor in predecessors[state]:
+                if not self.mdp.isTerminal(predecessor):
+                    actions = self.mdp.getPossibleActions(predecessor)
+                    if len(actions) > 0:
+                        max_qvalue = max(
+                            self.computeQValueFromValues(predecessor, action) 
+                            for action in actions
+                        )
+                        diff = abs(self.values[predecessor] - max_qvalue)
+                        if diff > self.theta:
+                            heapq.heappush(priority_queue, (-diff, predecessor))
 
